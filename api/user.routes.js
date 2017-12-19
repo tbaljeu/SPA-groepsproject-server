@@ -1,6 +1,5 @@
 // // user routing.
 var User = require('../model/user');
-var Image = require('../model/image');
 var express = require('express');
 var routes = express.Router();
 

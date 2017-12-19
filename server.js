@@ -9,7 +9,7 @@ var app = express();
 
 // Routes.
 var userroutes = require('./api/user.routes');
-var imageroutes = require('./api/images.routes');
+//var imageroutes = require('./api/images.routes');
 //var genreRoutes = require('./api/image.routes');
 // BodyParser zorgt dat we de body uit een request kunnen gebruiken.
 app.use(bodyParser.urlencoded({'extended': 'true'}));
@@ -40,7 +40,7 @@ app.use(function (req, res, next)
 
 // Installeer de routes.
 app.use('/api/v1', userroutes);
-app.use('/api/v1', imageroutes);
+//app.use('/api/v1', imageroutes);
 
 // Wordt uitgevoerd wanneer err != null; anders door naar next().
 app.use(function (err, req, res, next) 
