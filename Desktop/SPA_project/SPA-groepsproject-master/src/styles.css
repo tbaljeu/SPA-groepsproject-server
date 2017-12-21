@@ -1,0 +1,31 @@
+/* You can add global styles to this file, and also import other style files */
+
+.navbar-nav>li>a,
+.navbar-brand,
+.navbar-text {
+  color: #cccccc;
+}
+
+.navbar-nav>li>a.active {
+  color: white;
+}
+
+.navbar {
+  border-radius: 0px;
+}
+body{
+  background-color: rgb(29, 29, 29);
+  color:white;
+}
+
+app-root{
+  position: absolute;
+  top: 50%;
+  margin-top: -200px;
+  /* half of #content height*/
+  left: 0;
+  width: 100%;
+}
+
+
+
