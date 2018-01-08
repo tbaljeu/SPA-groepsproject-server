@@ -1,11 +1,12 @@
 // Server API.
-var http = require('http');
-var express = require('express');
-var bodyParser = require('body-parser');
-var logger = require('morgan');
-var mongodb = require('./config/mongo.db');
-var config = require('./config/env/env');
-var app = express();
+var http        = require('http');
+var express     = require('express');
+var bodyParser  = require('body-parser');
+var logger      = require('morgan');
+var mongodb     = require('./config/mongo.db');
+var config      = require('./config/env/env');
+var jwt 		= require('express-jwt');
+var app         = express();
 
 // Routes.
 var userroutes = require('./api/user.routes');
