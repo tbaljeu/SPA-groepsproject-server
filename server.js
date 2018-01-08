@@ -3,6 +3,7 @@ var http = require('http');
 var express = require('express');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
+var jwt 		= require('express-jwt');
 var mongodb = require('./config/mongo.db');
 var config = require('./config/env/env');
 var app = express();
@@ -15,6 +16,17 @@ var userroutes = require('./api/user.routes');
 app.use(bodyParser.urlencoded({'extended': 'true'}));
 app.use(bodyParser.json());
 app.use(bodyParser.json({type: 'application/vnd.api+json'}));
+
+// JWT nodig behalve op gespecifeerde routes.
+app.use(jwt({
+    secret: process.env.TOPSECRET
+}).unless({
+    path: 
+    [
+        { url: '/api/v1/users', methods: ['GET'] },
+        { url: '/api/v1/authenticate', methods: ['POST'] }
+    ]
+}));
 
 // Configureer de app.
 app.set('port', (process.env.PORT | config.env.webPort));

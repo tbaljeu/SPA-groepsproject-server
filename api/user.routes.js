@@ -1,7 +1,8 @@
 // // user routing.
-var User = require('../model/user');
-var express = require('express');
-var routes = express.Router();
+var User        = require('../model/user');
+var express     = require('express');
+var routes      = express.Router();
+var auth        = require('../config/authenticator.js');
 
 // Alle users ophalen via promise.
 routes.get('/users', function(req, res)
@@ -10,6 +11,46 @@ routes.get('/users', function(req, res)
         .then((users) => res.status(200).send(users))
         .catch((error) => res.status(401).send(error));
 });
+
+routes.get('/testtoken', function(req, res)
+{
+   res.send("How'd you get here?!");
+});
+
+routes.post('/authenticate', function(req, res) 
+{
+    
+      // find the user
+      User.findOne({
+        username: req.body.username
+      }, function(err, user) {
+    
+        if (err) throw err;
+    
+        if (!user) {
+          res.json({ success: false, message: 'Authentication failed. User not found.' });
+        } else if (user) {
+    
+          // check if password matches
+          if (user.password != req.body.password) {
+            res.json({ success: false, message: 'Authentication failed. Wrong password.' });
+          } else {
+    
+            // if user is found and password is right
+            // create a token with only our given payload
+        // we don't want to pass in the entire user since that has the password
+
+        var token = auth.encodeToken("user1", "password");
+        res.status(200).json({
+            "token": token,
+        });
+          }   
+    
+        }
+    
+      });
+    });
+
 
 // Specifiek 1 user op username en password opvragen.
 routes.get('/users/:username/:password', function(req, res)
