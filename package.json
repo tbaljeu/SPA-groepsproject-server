@@ -1,7 +1,7 @@
 {
-  "name": "server",
+  "name": "Solarweb",
   "version": "1.0.0",
-  "description": "Node server met API naar mongodb database",
+  "description": "Node API voor Mongo database.",
   "main": "server.js",
   "scripts": {
     "test": "node node_modules/mocha/bin/_mocha ./test/*test.js --reporter spec",

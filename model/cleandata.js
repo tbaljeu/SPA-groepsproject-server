@@ -2,16 +2,17 @@
 var mongoose    = require('mongoose');
 var Schema      = mongoose.Schema;
 
-// Raw schema.
+// Clean schema.
 const CleandataSchema = new Schema({
     name: String,
-    timeStamp: String,
-    info[
-      energy: String,
-      alert:String
-    ]
+    info: 
+      [{
+        timeStamp: String,
+        energy: String,
+        alert: String
+      }]
 });
 
-// Raw model.
+// Clean model.
 const Cleandata = mongoose.model('cleandata', CleandataSchema);
 module.exports = Cleandata;

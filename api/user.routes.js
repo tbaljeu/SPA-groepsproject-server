@@ -1,8 +1,9 @@
 // // user routing.
-var User = require('../model/user');
-var express = require('express');
-var routes = express.Router();
-var auth = require('../config/authenticator.js');
+var User        = require('../model/user');
+var express     = require('express');
+var routes      = express.Router();
+var bcrypt      = require('bcrypt');
+var auth        = require('../config/authenticator.js');
 
 // Alle users ophalen via promise.
 routes.get('/users', function(req, res) {
@@ -16,12 +17,13 @@ routes.get('/testtoken', function(req, res) {
 });
 
 routes.post('/authenticate', function(req, res) {
-
-  // find the user
+  // Token genereren, inloggen. 
   User.findOne({
     username: req.body.username
-  }, function(err, user) {
-
+  }, 
+  
+  function(err, user) 
+  {
     if (err) throw err;
 
     if (!user) {
@@ -29,15 +31,19 @@ routes.post('/authenticate', function(req, res) {
         success: false,
         message: 'Authentication failed.'
       });
-    } else if (user) {
+    } 
+    
+    else if (user) {
 
-      // check if password matches
+      // Check if password matches.
       if (user.password != req.body.password) {
         res.json({
           success: false,
           message: 'Authentication failed.'
         });
-      } else {
+      } 
+      
+      else {
 
         // if user is found and password is right
         // create a token with only our given payload
@@ -54,41 +60,37 @@ routes.post('/authenticate', function(req, res) {
   });
 });
 
-
 // Specifiek 1 user op username en password opvragen.
-routes.get('/users/:username/:password', function(req, res) {
-  User.findOne({
-      username: req.params.username,
-      password: req.params.password
-    })
+routes.get('/users/:id', function(req, res) {
+  User.findById({_id: req.params.id})
     .then((user) => res.status(200).send(user))
     .catch((error) => res.status(401).send(error));
 });
 
-// Nieuwe user, op basis van de request body.
+// Nieuwe user, op basis van de request body MET password hashing.
 routes.post('/createuser', function(req, res) {
-  // user aanmaken.
   let user = new User(req.body);
-  //user opslaan, met catch.
+  // user.password = bcrypt.hashSync(req.body.password, 10);
+
   user.save({})
     .then((user) => res.status(200).send(user))
     .catch((error) => res.status(401).send(error));
 });
 
-// Bewerkt user.
+// Bewerkt user. Vinden, dan aanpassen.
 routes.put('/edituser/:id/:username/:password', function(req, res) {
-  // Vindt user, verandert atribuut, slaat op.
-  User.findById({
-      _id: req.params.id
-    })
+  User.findById({_id: req.params.id})
+
     .then((user) => {
       user.username = req.params.username;
       user.password = req.params.password;
       user.save({})
         .then((user) => res.status(200).send(user))
         .catch((error) => res.status(401).send(error));
+
       res.status(200).json(user);
     })
+
     .catch((error) => res.status(401).send(error));
 });
 

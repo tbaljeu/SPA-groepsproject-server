@@ -1,38 +1,47 @@
 // Server API.
-var http        = require('http');
-var express     = require('express');
-var bodyParser  = require('body-parser');
-var logger      = require('morgan');
-var jwt 		= require('express-jwt');
-var mongodb     = require('./config/mongo.db');
-var config      = require('./config/env/env');
-var app         = express();
-
-// Routes.
-var userroutes = require('./api/user.routes');
-var rawdataroutes = require('./api/rawdata.routes')
+var http            = require('http');
+var express         = require('express');
+var bodyParser      = require('body-parser');
+var logger          = require('morgan');
+var jwt 		    = require('express-jwt');
+var mongodb         = require('./config/mongo.db');
+var environment     = require('./config/environment');
+var app             = express();
 
 // BodyParser zorgt dat we de body uit een request kunnen gebruiken.
 app.use(bodyParser.urlencoded({'extended': 'true'}));
 app.use(bodyParser.json());
 app.use(bodyParser.json({type: 'application/vnd.api+json'}));
 
+// Routes.
+var userroutes      = require('./api/user.routes');
+var rawdataroutes   = require('./api/rawdata.routes')
+
+// Installeer de routes.
+app.use('/api/v1', userroutes);
+app.use('/api/v1', rawdataroutes);
+
 // JWT nodig behalve op gespecifeerde routes.
-/*app.use(jwt({
-    secret: process.env.TOPSECRET
-}).unless({
-    path: 
-    [
-        { url: '/api/v1/users', methods: ['GET'] },
-        { url: '/api/v1/authenticate', methods: ['POST'] }
-    ]
-}));*/
+app.use(jwt(
+    {
+        secret: process.env.TOPSECRET
+    })
+    
+    .unless(
+    {
+        path: 
+        [
+            { url: '/api/v1/users', methods: ['GET'] },
+            { url: '/api/v1/authenticate', methods: ['POST'] }
+        ]
+    })
+);
 
 // Configureer de app.
-app.set('port', (process.env.PORT | config.env.webPort));
+app.set('port', (process.env.PORT | environment.env.webPort));
 app.set('env', (process.env.ENV | 'development'))
 
-// Installeer Morgan als logger.
+// Logger.
 app.use(logger('dev'));
 
 // CORS headers.
@@ -49,10 +58,6 @@ app.use(function (req, res, next)
     // Pass to next layer of middleware
     next();
 });
-
-// Installeer de routes.
-app.use('/api/v1', userroutes);
-app.use('/api/v1', rawdataroutes);
 
 // Wordt uitgevoerd wanneer err != null; anders door naar next().
 app.use(function (err, req, res, next) 
@@ -76,11 +81,11 @@ app.use('*', function (req, res)
 });
 
 // Installatie klaar, start de server.
-app.listen(config.env.webPort, function () 
+app.listen(environment.env.webPort, function () 
 {
-    console.log('De server luistert op port ' + app.get('port'));
-    console.log('Zie bijvoorbeeld http://localhost:3000/api/recipes');
+    console.log('De server luistert op port: ' + app.get('port'));
+    console.log('Zie voorbeeld http://localhost:3000/api/authenticate');
 });
 
-// Voor testen met mocha/chai moeten we de app exporteren.
+// Exporteren.
 module.exports = app;

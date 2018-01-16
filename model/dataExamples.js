@@ -2,16 +2,17 @@
 var mongoose    = require('mongoose');
 var Schema      = mongoose.Schema;
 
-// Raw schema.
+// DataExample schema.
 const DataExamplesSchema = new Schema({
     name: String,
     timeStamp: String,
-    info[
-      energy: String,
-      alert:String
-    ]
+    info:
+      [{
+        energy: String,
+        alert:String
+      }]
 });
 
-// Raw model.
+// DataExample model.
 const DataExamples = mongoose.model('dataexamples', DataExamplesSchema);
-module.exports = dataExamples;
+module.exports = DataExamples;
