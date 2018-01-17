@@ -3,9 +3,19 @@ var jwt			= require('jwt-simple');
 const moment 	= require('moment');
 var bcrypt      = require('bcrypt');
 
-function comparePasswords(candidatepassword, hashedPassword, cb)
+
+function comparePasswords(candidatepassword, hashedpassword, cb)
 {
-    bcrypt.compare(candidatepassword, hashedPassword, function (err, isMatch)
+    bcrypt.compare(candidatepassword, hashedpassword, function(err, res) 
+    {
+        if (err) 
+        {
+            console.log(err);
+        }
+        cb(res)
+    });
+
+    /*bcrypt.compare(candidatepassword, hashedPassword, function (err, isMatch)
     {
         if (err) 
         {
@@ -13,7 +23,7 @@ function comparePasswords(candidatepassword, hashedPassword, cb)
         }
 
         return cb(isMatch);
-    })
+    })*/
 }
 
 // Token aanmaken via username en password op inlog.

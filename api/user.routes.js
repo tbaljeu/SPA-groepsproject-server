@@ -16,8 +16,8 @@ routes.get('/testtoken', function(req, res) {
   res.send("How'd you get here?!");
 });
 
+// Token genereren, inloggen. 
 routes.post('/authenticate', function(req, res) {
-  // Token genereren, inloggen. 
   User.findOne({
     username: req.body.username
   }, 
@@ -34,29 +34,27 @@ routes.post('/authenticate', function(req, res) {
     } 
     
     else if (user) {
+      // Komen passwords overeen?
+      console.log("[User gevonden, gegevens;]");
+      console.log(user);
 
-      // Check if password matches.
-      if (user.password != req.body.password) {
-        res.json({
-          success: false,
-          message: 'Authentication failed.'
-        });
-      } 
-      
-      else {
+      auth.comparePasswords(req.body.password, user.password, function(isMatch){
+        if(!isMatch){
+          res.json({
+            success: false,
+            message: 'Authentication failed.'
+          });
+        } 
 
-        // if user is found and password is right
-        // create a token with only our given payload
-        // we don't want to pass in the entire user since that has the password
-
-        var token = auth.encodeToken("user1", "password");
-        res.status(200).json({
-          "token": token,
-        });
-      }
-
+        else {
+          // Token maken.
+          var token = auth.encodeToken(user.username, user.password);
+          res.status(200).json({
+            "token": token,
+          });
+        }
+      })
     }
-
   });
 });
 
@@ -70,7 +68,7 @@ routes.get('/users/:id', function(req, res) {
 // Nieuwe user, op basis van de request body MET password hashing.
 routes.post('/createuser', function(req, res) {
   let user = new User(req.body);
-  // user.password = bcrypt.hashSync(req.body.password, 10);
+  user.password = bcrypt.hashSync(req.body.password, 10);
 
   user.save({})
     .then((user) => res.status(200).send(user))

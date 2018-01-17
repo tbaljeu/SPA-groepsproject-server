@@ -17,25 +17,24 @@ app.use(bodyParser.json({type: 'application/vnd.api+json'}));
 var userroutes      = require('./api/user.routes');
 var rawdataroutes   = require('./api/rawdata.routes')
 
-// Installeer de routes.
-app.use('/api/v1', userroutes);
-app.use('/api/v1', rawdataroutes);
-
 // JWT nodig behalve op gespecifeerde routes.
 app.use(jwt(
     {
         secret: process.env.TOPSECRET
     })
-    
     .unless(
     {
         path: 
         [
-            { url: '/api/v1/users', methods: ['GET'] },
+            { url: '/api/v1/createuser', methods: ['POST'] },
             { url: '/api/v1/authenticate', methods: ['POST'] }
         ]
     })
 );
+
+// Installeer de routes.
+app.use('/api/v1', userroutes);
+app.use('/api/v1', rawdataroutes);
 
 // Configureer de app.
 app.set('port', (process.env.PORT | environment.env.webPort));
